@@ -397,6 +397,7 @@ void bbcal_eng_calib_w_h2(char const *configfilename,
   // turning on additional branches for the global cut
   C->SetBranchStatus("sbs.hcal.e", 1);
   C->SetBranchStatus("bb.gem.track.nhits", 1);
+  C->SetBranchStatus("bb.grinch_tdc.*", 1);
 
   // Clear arrays
   memset(nevents_per_cell, 0, ncell*sizeof(int));
@@ -557,6 +558,7 @@ void bbcal_eng_calib_w_h2(char const *configfilename,
   Double_t T_psAtime;   Tout->Branch("psAtime", &T_psAtime, "psAtime/D"); // ADC time (PS)
   //
   Double_t T_clusE;     Tout->Branch("clusE", &T_clusE, "clusE/D"); // cluster energy (PS+SH)
+  Double_t T_shIdblk;   Tout->Branch("shidblk", &T_shIdblk, "shIdblk/D"); // shower block id number
   Double_t T_shX;       Tout->Branch("shX", &T_shX, "shX/D"); // shower x position
   Double_t T_shY;       Tout->Branch("shY", &T_shY, "shY/D"); //// shower y position
   Int_t    T_shNblk;    Tout->Branch("shNblk", &T_shNblk, "shNblk/I");    // size of best cluster (SH)
