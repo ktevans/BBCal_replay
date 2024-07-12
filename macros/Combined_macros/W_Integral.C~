@@ -1,0 +1,68 @@
+///
+#include <TF1.h>
+void W_Integral()
+{
+
+ double W_integ = 0.0;
+ double W_loss_integ = 0.0;
+ double W_integ_ratio = 0.0;
+
+ //Add root files to the chain
+ TChain* Tout = new TChain("Tout");
+ Tout->Add("hist/GEN4_he3_set1_prepass0_bbcal_eng_calib_test.root");
+
+ Double_t W2;           Tout->SetBranchAddress("W2", &W2);
+ Double_t shIdblk;      Tout->SetBranchAddress("shIdblk", &shIdblk);
+
+ if(Tout->GetEntries()==0){
+   std::cerr << "\n --- No ROOT file found!! --- \n\n";
+   throw;
+ }else std::cout << "\nFound " << Tout->GetEntries() << " events. Starting analysis.. \n";
+
+ //Define histograms
+
+ TH1D* h_W = new TH1D("h_W",";W",150,0.0,3.0);
+ h_W->GetXaxis()->SetTitle("W^2 [GeV^2]");
+
+ TH1D* h_W_loss = new TH1D("h_W_loss",";W without Low Signal Shower Channels",150,0.0,3.0);
+ h_W_loss->GetXaxis()->SetTitle("W^2 [GeV^2]");
+
+//Fill histograms
+
+//Loop over all events
+ for (size_t iev = 0; iev < Tout->GetEntries(); iev++)
+ {
+
+   Tout->GetEntry(iev);
+  
+   h_W->Fill(W2);
+
+   if(shIdblk!=45 && shIdblk!=50 && shIdblk!=52)
+   {
+     h_W_loss->Fill(W2);
+   }
+   
+ }//end process over events
+
+
+ //Draw canvas
+ TCanvas *c1 = new TCanvas("c1","W Comparison",100,100,700,700);
+ c1->Divide(1,2);
+ c1->cd(1);
+ h_W->Draw();
+ c1->cd(2);
+ h_W_loss->Draw();
+
+ W_integ = h_W -> Integral();
+ W_loss_integ = h_W_loss -> Integral();
+ W_integ_ratio = W_loss_integ/W_integ;
+
+ printf("W integral = %f\n", W_integ);
+ printf("W integral without bad channels = %f\n", W_loss_integ);
+ printf("W integral ratio = %f\n", W_integ_ratio);
+ //TPaveLabel *Plab0 = new TPaveLabel(0.27, 0.76, 0.75, 0.87, Form("%5.4f GHz/#muA at %4.0f #muA", (evrate*1e-9)/(curr*1e6*20), curr*1e6), "NDC");
+ //Plab0 -> Draw();
+
+ c1->Print("plots/W_Comparison.pdf");
+
+}

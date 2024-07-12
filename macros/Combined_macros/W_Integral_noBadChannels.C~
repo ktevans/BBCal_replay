@@ -1,0 +1,44 @@
+///
+#include <TF1.h>
+void W_Integral()
+{
+
+ double W_integ = 0.0;
+
+ //Add root files to the chain
+ TChain* T = new TChain("T");
+ T->Add("hist/GEN4_he3_set4_prepass0_bbcal_eng_calib_test.root");
+
+ if(T->GetEntries()==0){
+   std::cerr << "\n --- No ROOT file found!! --- \n\n";
+   throw;
+ }else std::cout << "\nFound " << T->GetEntries() << " events. Starting analysis.. \n";
+
+
+
+ //Define histograms
+
+ TH1D* h_W = new TH1D("h_W",";W",150,0.0,3.0);
+ h_W->GetXaxis()->SetTitle("W [GeV]");
+
+ //TH1D* h_W_loss = new TH1D("h_W_loss",";W without Low Signal Shower Channels",150,0.0,3.0);
+ //h_W_loss->GetXaxis()->SetTitle("W [GeV]");
+
+
+
+ h_W->Fill(W);
+
+
+ //Draw canvas
+ TCanvas *c1 = new TCanvas("c1","W Comparison",100,100,700,700);
+ h_W->Draw();
+
+ W_integ = h_W -> Integral();
+
+ printf("W integral = %f\n", W_integ);
+ //TPaveLabel *Plab0 = new TPaveLabel(0.27, 0.76, 0.75, 0.87, Form("%5.4f GHz/#muA at %4.0f #muA", (evrate*1e-9)/(curr*1e6*20), curr*1e6), "NDC");
+ //Plab0 -> Draw();
+
+ c1->Print("plots/W_Comparison_noBadChannels.pdf");
+
+}
