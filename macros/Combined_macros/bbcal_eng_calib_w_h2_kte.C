@@ -426,15 +426,11 @@ void bbcal_eng_calib_w_h2_kte(char const *configfilename,
   // turning on additional branches for the global cut
   C->SetBranchStatus("sbs.hcal.e", 1);
   C->SetBranchStatus("bb.gem.track.nhits", 1);
-<<<<<<< HEAD
   C->SetBranchStatus("bb.grinch_tdc.*", 1);
-=======
   C->SetBranchStatus("bb.gem.track.ngoodhits", 1);
   C->SetBranchStatus("bb.gem.track.chi2ndf", 1);
   C->SetBranchStatus("bb.grinch_tdc.clus.trackindex", 1);
   C->SetBranchStatus("bb.grinch_tdc.clus.size", 1);
->>>>>>> 4c7b84867145b1a1ddabbce2382222ac26a796aa
-
   // Clear arrays
   memset(nevents_per_cell, 0, ncell*sizeof(int));
   memset(badCells, 0, ncell*sizeof(bool));
