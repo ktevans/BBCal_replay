@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
+import statistics
 
 squrt_E = [0.687,0.687,0.687,0.783,0.529,0.529,0.529,0.529,0.529,0.707,0.707,0.707,0.613,0.613,0.612,0.612]
 sigma_E_over_E = [2.8005,2.8590,2.8392,3.9356,1.5165,1.5106,1.5042,1.5000,1.5352,3.1485,3.0055,3.1350,2.1613,2.2000,2.1944,2.4258]
@@ -35,8 +36,26 @@ y_fit = quad_poly_func(x_fit, c0_fit, c1_fit, c2_fit)
 #ndf = len(squrt_E) - (2 - 1)
 #goodFit = chi_sum / ndf
 
+## Define R^2
+resid_sum = 0
+mean_sum = 0
+mean_y = statistics.mean(sigma_E_over_E)
+n = 0
+for i in squrt_E:
+    fit_value = np.sqrt( np.square(popt[0] * np.square(i)) + np.square(popt[1] * i) + np.square(popt[2]) )
+    
+    resid_sq = np.square(sigma_E_over_E[n] - fit_value)
+    resid_sum += resid_sq
+
+    mean_sq = np.square(sigma_E_over_E[n] - mean_y)
+    mean_sum += mean_sq
+
+    n+=1
+
+r_sq = 1 - (resid_sum / mean_sum)
+
 ## Plotting
-plt.plot(x_fit, y_fit, color='green', label=f'Quadrature Sum Fit\ny = ' + "{:.3f}".format(popt[0]) + 'x$^2$ \u2295 ' + "{:.7f}".format(popt[1]) + 'x \u2295 ' + "{:.8f}".format(popt[2])) #"\n\u03C7$^2$/ndf=" +"{:.6f}".format(goodFit))
+plt.plot(x_fit, y_fit, color='green', label=f'Quadrature Sum Fit\ny = ' + "{:.3f}".format(popt[0]) + 'x$^2$ \u2295 ' + "{:.7f}".format(popt[1]) + 'x \u2295 ' + "{:.8f}".format(popt[2]) + "\nR$^2$ = " +"{:.3f}".format(r_sq))
 plt.legend()
 
 plt.xlabel("1/\u221A(E) [GeV$^{-1/2}$]")
