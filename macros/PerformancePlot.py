@@ -25,23 +25,27 @@ plt.errorbar(energy, sigma_E_over_E, xerr=None, yerr=uncert_sigma_E_over_E, fmt=
 #y_fit = poly(x_fit)
 
 ## poly Fit
-#def poly_func(x, c0, c1, c2):
-def poly_func(x, c0, c2):
-    return np.sqrt( np.square(c0 * (1/np.sqrt(x))) + np.square(c2) )
+#def poly_func(x, c0):
+#def poly_func(x, c0, c2):
+def poly_func(x, c0, c1, c2):
+    return (c0 / np.sqrt(x)) + (c1 / x) + c2
+    #return np.sqrt( np.square(c0 * (1/np.sqrt(x))) + np.square(c2) )
     #return np.sqrt( np.square(c0 * (1/np.sqrt(x))) + np.square(c1 * (1/x)) + np.square(c2) )
-    #return (c0 / np.sqrt(x)) + (c1 / x) + c2
+    #return c0 / np.sqrt(x)
 
 popt, pcov = curve_fit(poly_func, energy, sigma_E_over_E, sigma=uncert_sigma_E_over_E)
-#c0_fit, c1_fit, c2_fit = popt
-c0_fit, c2_fit = popt
+c0_fit, c1_fit, c2_fit = popt
+#c0_fit, c2_fit = popt
+#c0_fit = popt
 print(pcov)
 
 min_e_lim = np.min(energy) - (0.5 * np.std(energy))
 max_e_lim = np.max(energy) + np.std(energy)
 
 x_fit = np.linspace(min_e_lim, max_e_lim, len(energy)*10)
-#y_fit = poly_func(x_fit, c0_fit, c1_fit, c2_fit)
-y_fit = poly_func(x_fit, c0_fit, c2_fit)
+y_fit = poly_func(x_fit, c0_fit, c1_fit, c2_fit)
+#y_fit = poly_func(x_fit, c0_fit, c2_fit)
+#y_fit = poly_func(x_fit, c0_fit)
 
 ## Define chi2/ndf
 #chi_sum = 0
@@ -60,10 +64,11 @@ mean_sum = 0
 mean_y = statistics.mean(sigma_E_over_E)
 n = 0
 for i in energy:
-    fit_value = np.sqrt( np.square(popt[0] * (1/np.sqrt(i))) + np.square(popt[1]) )
-    #fit_value = np.sqrt( np.square(popt[0] * (1/np.sqrt(i))) + np.square(popt[1] * (1/i)) + np.square(popt[2]) )
     #fit_value = coeffs[0] * np.square(i) + coeffs[1] * i + coeffs[2]
-    #fit_value = (popt[0] / np.sqrt(i)) + (popt[1] / i) + popt[2]
+    fit_value = (popt[0] / np.sqrt(i)) + (popt[1] / i) + popt[2]
+    #fit_value = np.sqrt( np.square(popt[0] * (1/np.sqrt(i))) + np.square(popt[1]) )
+    #fit_value = np.sqrt( np.square(popt[0] * (1/np.sqrt(i))) + np.square(popt[1] * (1/i)) + np.square(popt[2]) )
+    #fit_value = popt[0] / np.sqrt(i)
     
     resid_sq = np.square(sigma_E_over_E[n] - fit_value)
     resid_sum += resid_sq
@@ -76,9 +81,10 @@ for i in energy:
 r_sq = 1 - (resid_sum / mean_sum)
 
 ## Plotting
-#plt.plot(x_fit, y_fit, color='green', label=f'Second Order Polynomial Fit\n\u03C3$_E$/E\'$_e$ = ' + "{:.3f}".format(popt[0]) + '% /\u221A(E\') + ' + "{:.4f}".format(popt[2]) + '% + ' + "{:.3f}".format(popt[1]) + '%/E\'' + "\nR$^2$ = " +"{:.3f}".format(r_sq))
+plt.plot(x_fit, y_fit, color='green', label=f'Second Order Polynomial Fit\n\u03C3$_E$/E\'$_e$ = ' + "{:.3f}".format(popt[0]) + '% /\u221A(E\') + ' + "{:.4f}".format(popt[2]) + '% + ' + "{:.3f}".format(popt[1]) + '%/E\'' + "\nR$^2$ = " +"{:.3f}".format(r_sq))
 #plt.plot(x_fit, y_fit, color='green', label=f'Quadrature Sum Fit\n\u03C3$_E$/E\'$_e$ = ' + "{:.6f}".format(popt[0]) + '% /\u221A(E\') \u2295 ' + "{:.8f}".format(popt[2]) + '% \n\u2295 ' + "{:.3f}".format(popt[1]) + '%/E\'' + "\nR$^2$ = " +"{:.3f}".format(r_sq))
-plt.plot(x_fit, y_fit, color='green', label=f'Quadrature Sum Fit\n\u03C3$_E$/E\'$_e$ = ' + "{:.6f}".format(popt[0]) + '% /\u221A(E\') \u2295 ' + "{:.8f}".format(popt[1]) + "%\nR$^2$ = " +"{:.3f}".format(r_sq))
+#plt.plot(x_fit, y_fit, color='green', label=f'Quadrature Sum Fit\n\u03C3$_E$/E\'$_e$ = ' + "{:.6f}".format(popt[0]) + '% /\u221A(E\') \u2295 ' + "{:.8f}".format(popt[1]) + "%\nR$^2$ = " +"{:.3f}".format(r_sq))
+#plt.plot(x_fit, y_fit, color='green', label=f'Quadrature Sum Fit\n\u03C3$_E$/E\'$_e$ = ' + "{:.6f}".format(popt[0]) + "% /\u221A(E\')\nR$^2$ = " +"{:.3f}".format(r_sq))
 plt.legend()
 #\u2295
 
