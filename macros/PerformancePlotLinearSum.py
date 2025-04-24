@@ -19,7 +19,18 @@ def poly_func(x, c0, c1, c2):
 ## Create a curve fit based on the defined poly_fit
 popt, pcov = curve_fit(poly_func, energy, sigma_E_over_E, sigma=uncert_sigma_E_over_E) ## note that curve_fit uses a least squares fitting algorithm
 c0_fit, c1_fit, c2_fit = popt
-print(pcov)
+#print("\ncovariance matrix:\n")
+#print(pcov)
+
+c0_uncert = (np.sqrt(pcov[[0],[0]]))
+c1_uncert = np.sqrt(pcov[[1],[1]])
+c2_uncert = np.sqrt(pcov[[2],[2]])
+
+print("Fit parameter values:")
+print("{:.3f}".format(popt[0]) + " \u00B1 " + "{:.3f}".format(c0_uncert[0]) + "%")
+print("{:.3f}".format(popt[1]) + " \u00B1 " + "{:.3f}".format(c1_uncert[0]) + "%")
+print("{:.4f}".format(popt[2]) + " \u00B1 " + "{:.4f}".format(c2_uncert[0]) + "%")
+
 
 ## Define axis and fit limits based on dataset
 min_e_lim = np.min(energy) - (0.5 * np.std(energy))
